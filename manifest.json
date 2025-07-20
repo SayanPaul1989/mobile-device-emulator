@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Mobile Device Emulator Pro",
+  "version": "1.0.0",
+  "description": "Advanced mobile device emulation with modern devices, orientation, touch, dark mode, and accurate DPR support",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "debugger"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Mobile Device Emulator Pro"
+  },
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["skins.css", "url-config.js"],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

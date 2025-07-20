@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Device Emulator Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 20px;
+            background: #f8f9fa;
+        }
+        .demo-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin: 10px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #007bff;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        .device-select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .demo-message {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>📱 Mobile Device Emulator Demo</h1>
+        
+        <div class="demo-message">
+            <strong>Demo Mode:</strong> This shows the UI functionality. For full emulation, install as Chrome extension.
+        </div>
+
+        <label>Select Device:</label>
+        <select class="device-select" id="deviceSelect">
+            <option value="">Choose a device...</option>
+            <option value="iPhone 15 Pro Max">iPhone 15 Pro Max</option>
+            <option value="Samsung Galaxy S24 Ultra">Samsung Galaxy S24 Ultra</option>
+            <option value="Google Pixel 8 Pro">Google Pixel 8 Pro</option>
+            <option value="iPad Pro 12.9">iPad Pro 12.9"</option>
+        </select>
+
+        <div style="margin: 15px 0;">
+            <label>Touch:</label>
+            <div class="toggle-switch">
+                <input type="checkbox" id="touchToggle" checked>
+                <span class="slider"></span>
+            </div>
+            <span id="touchStatus">Enabled</span>
+        </div>
+
+        <div style="margin: 15px 0;">
+            <label>Dark Mode:</label>
+            <div class="toggle-switch">
+                <input type="checkbox" id="darkModeToggle">
+                <span class="slider"></span>
+            </div>
+            <span id="darkStatus">Off</span>
+        </div>
+
+        <div style="margin: 15px 0;">
+            <label>Device Skin:</label>
+            <div class="toggle-switch">
+                <input type="checkbox" id="deviceSkinToggle">
+                <span class="slider"></span>
+            </div>
+            <span id="skinStatus">Disabled</span>
+        </div>
+
+        <button class="btn" onclick="demoActivate()">Demo Activate</button>
+        
+        <div id="status" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px; text-align: center;">
+            Status: Demo Mode - Install as Chrome extension for full functionality
+        </div>
+    </div>
+
+    <script>
+        // Initialize demo when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setupToggleHandlers();
+            updateStatus();
+        });
+
+        function setupToggleHandlers() {
+            // Touch toggle
+            document.getElementById('touchToggle').addEventListener('change', function(e) {
+                document.getElementById('touchStatus').textContent = e.target.checked ? 'Enabled' : 'Disabled';
+                updateStatus();
+            });
+
+            // Dark mode toggle
+            document.getElementById('darkModeToggle').addEventListener('change', function(e) {
+                document.getElementById('darkStatus').textContent = e.target.checked ? 'On' : 'Off';
+                const container = document.querySelector('.demo-container');
+                if (e.target.checked) {
+                    document.body.style.background = '#2c3e50';
+                    document.body.style.color = '#ecf0f1';
+                    container.style.background = '#34495e';
+                    container.style.color = '#ecf0f1';
+                } else {
+                    document.body.style.background = '#f8f9fa';
+                    document.body.style.color = '#333';
+                    container.style.background = 'white';
+                    container.style.color = '#333';
+                }
+                updateStatus();
+            });
+
+            // Device skin toggle
+            document.getElementById('deviceSkinToggle').addEventListener('change', function(e) {
+                document.getElementById('skinStatus').textContent = e.target.checked ? 'Enabled' : 'Disabled';
+                updateStatus();
+            });
+
+            // Device select
+            document.getElementById('deviceSelect').addEventListener('change', function(e) {
+                updateStatus();
+            });
+        }
+
+        function updateStatus() {
+            const device = document.getElementById('deviceSelect').value;
+            const touch = document.getElementById('touchToggle').checked;
+            const darkMode = document.getElementById('darkModeToggle').checked;
+            const deviceSkin = document.getElementById('deviceSkinToggle').checked;
+            
+            const status = document.getElementById('status');
+            
+            if (device) {
+                status.innerHTML = `
+                    <strong>Ready to Activate:</strong><br>
+                    Device: ${device}<br>
+                    Touch: ${touch ? 'Enabled' : 'Disabled'}<br>
+                    Dark Mode: ${darkMode ? 'On' : 'Off'}<br>
+                    Device Skin: ${deviceSkin ? 'Enabled' : 'Disabled'}
+                `;
+                status.style.background = '#fff3cd';
+                status.style.color = '#856404';
+            } else {
+                status.innerHTML = 'Status: Demo Mode - Select a device to continue';
+                status.style.background = '#f8f9fa';
+                status.style.color = '#6c757d';
+            }
+        }
+
+        function demoActivate() {
+            const device = document.getElementById('deviceSelect').value;
+            const touch = document.getElementById('touchToggle').checked;
+            const darkMode = document.getElementById('darkModeToggle').checked;
+            const deviceSkin = document.getElementById('deviceSkinToggle').checked;
+            
+            const status = document.getElementById('status');
+            const btn = document.querySelector('.btn');
+            
+            if (device) {
+                // Simulate activation
+                btn.textContent = 'Activating...';
+                btn.disabled = true;
+                
+                setTimeout(() => {
+                    status.innerHTML = `
+                        <strong>✅ Demo Activated Successfully!</strong><br>
+                        Device: ${device}<br>
+                        Touch: ${touch ? 'Enabled' : 'Disabled'}<br>
+                        Dark Mode: ${darkMode ? 'On' : 'Off'}<br>
+                        Device Skin: ${deviceSkin ? 'Enabled' : 'Disabled'}<br>
+                        <small>Install as Chrome extension for real emulation</small>
+                    `;
+                    status.style.background = '#d4edda';
+                    status.style.color = '#155724';
+                    btn.textContent = 'Demo Reset';
+                    btn.disabled = false;
+                }, 1000);
+            } else {
+                status.innerHTML = '❌ Please select a device first';
+                status.style.background = '#f8d7da';
+                status.style.color = '#721c24';
+                
+                // Reset after 2 seconds
+                setTimeout(() => {
+                    updateStatus();
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>

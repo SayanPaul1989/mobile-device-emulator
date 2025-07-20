@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#007bff;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#0056b3;stop-opacity:1" />
+        </linearGradient>
+    </defs>
+    
+    <!-- Phone outline -->
+    <rect x="3.2" y="1.6" width="9.6" height="12.8" 
+          rx="1.28" ry="1.28" 
+          fill="url(#grad1)" stroke="#003d7a" stroke-width="2"/>
+    
+    <!-- Screen -->
+    <rect x="4.0" y="3.2" width="8.0" height="9.6" 
+          rx="0.32" ry="0.32" 
+          fill="#ffffff" stroke="#e0e0e0" stroke-width="1"/>
+    
+    <!-- Home button -->
+    <circle cx="8.0" cy="13.6" r="0.48" 
+            fill="#ffffff" stroke="#003d7a" stroke-width="1"/>
+    
+    <!-- Screen content lines -->
+    <line x1="4.8" y1="4.8" x2="11.2" y2="4.8" 
+          stroke="#007bff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="4.8" y1="6.4" x2="10.4" y2="6.4" 
+          stroke="#007bff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="4.8" y1="8.0" x2="9.6" y2="8.0" 
+          stroke="#007bff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="4.8" y1="9.6" x2="11.2" y2="9.6" 
+          stroke="#007bff" stroke-width="2" stroke-linecap="round"/>
+    <line x1="4.8" y1="11.2" x2="8.8" y2="11.2" 
+          stroke="#007bff" stroke-width="2" stroke-linecap="round"/>
+</svg>
