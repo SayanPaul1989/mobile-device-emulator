@@ -51,8 +51,10 @@ class DeviceSkinManager {
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    overflow: auto !important; /* Enable scrolling for the page content */
-    -webkit-overflow-scrolling: touch !important; /* Smooth scrolling on iOS */
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    pointer-events: auto !important; /* Allow interaction with content */
+    z-index: 1; /* Ensure content is above the screen overlay */
 }
 
 .device-skin .screen-overlay {
@@ -430,89 +432,82 @@ class DeviceSkinManager {
     }
 
     activateSkin(deviceName, orientation = 'portrait') {
-        this.deviceName = deviceName;
-        this.orientation = orientation; // Update the orientation property
-        this.isActive = true;
-        
-        // Remove existing skin
         this.deactivateSkin();
+
+        this.deviceName = deviceName;
+        this.orientation = orientation;
         
-        // Create new skin
-        this.createSkin();
+        this.currentSkin = this.createSkin();
+        if (!this.currentSkin) return;
+
+        this.pageContentWrapper = document.createElement('div');
+        this.pageContentWrapper.className = 'page-content-wrapper';
+
+        while (document.body.firstChild) {
+            this.pageContentWrapper.appendChild(document.body.firstChild);
+        }
+
+        const deviceScreen = this.currentSkin.querySelector('.device-screen');
+        deviceScreen.appendChild(this.pageContentWrapper);
+
+        document.body.appendChild(this.currentSkin);
+        this.currentSkin.classList.add('active');
         
+        this.addSkinControls();
+        this.isActive = true;
     }
 
     deactivateSkin() {
-        if (this.currentSkin) {
-            // Move content back to body
-            const pageContentWrapper = this.currentSkin.querySelector('.page-content-wrapper');
-            if (pageContentWrapper) {
-                while (pageContentWrapper.firstChild) {
-                    document.body.appendChild(pageContentWrapper.firstChild);
-                }
+        if (this.currentSkin && this.pageContentWrapper) {
+            while (this.pageContentWrapper.firstChild) {
+                document.body.appendChild(this.pageContentWrapper.firstChild);
             }
+        }
+
+        if (this.currentSkin) {
             this.currentSkin.remove();
             this.currentSkin = null;
         }
+
+        const controls = document.querySelector('.skin-controls');
+        if (controls) {
+            controls.remove();
+        }
+
         this.isActive = false;
+        this.pageContentWrapper = null;
     }
 
     createSkin() {
         const skinClass = this.getSkinClass(this.deviceName);
         if (!skinClass) {
             console.warn(`No skin available for device: ${this.deviceName}`);
-            return;
+            return null;
         }
 
-        // Create skin container
-        this.currentSkin = document.createElement('div');
-        this.currentSkin.className = `device-skin ${skinClass}`;
-        
+        const skinElement = document.createElement('div');
+        skinElement.className = `device-skin ${skinClass}`;
         
         if (this.orientation === 'landscape') {
-            this.currentSkin.classList.add('landscape');
+            skinElement.classList.add('landscape');
         }
 
-        // Create device frame
         const deviceFrame = document.createElement('div');
         deviceFrame.className = 'device-frame';
 
-        // Create device screen
         const deviceScreen = document.createElement('div');
         deviceScreen.className = 'device-screen';
 
-        // Create a wrapper for the original page content
-        const pageContentWrapper = document.createElement('div');
-        pageContentWrapper.className = 'page-content-wrapper';
-
-        // Move all children from document.body to the pageContentWrapper
-        while (document.body.firstChild) {
-            pageContentWrapper.appendChild(document.body.firstChild);
-        }
-
-        // Append the pageContentWrapper to the deviceScreen
-        deviceScreen.appendChild(pageContentWrapper);
-
-        // Add screen overlay
         const screenOverlay = document.createElement('div');
         screenOverlay.className = 'screen-overlay';
         deviceScreen.appendChild(screenOverlay);
 
-        // Add device-specific elements
         this.addDeviceSpecificElements(deviceFrame, skinClass);
 
-        // Assemble the skin
         deviceFrame.appendChild(deviceScreen);
-        this.currentSkin.appendChild(deviceFrame);
+        skinElement.appendChild(deviceFrame);
 
-        // Add skin controls
-        this.addSkinControls();
-
-        // Add to document
-        document.body.appendChild(this.currentSkin);
-
-        // Activate the skin immediately
-        this.currentSkin.classList.add('active');
+        return skinElement;
     }
 
     getSkinClass(deviceName) {
