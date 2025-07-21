@@ -19,7 +19,7 @@ class DeviceEmulatorPopup {
         this.orientationBtns = document.querySelectorAll('.orientation-btn');
         this.touchToggle = document.getElementById('touchToggle');
         this.darkModeToggle = document.getElementById('darkModeToggle');
-        this.deviceSkinToggle = document.getElementById('deviceSkinToggle');
+        
         this.customWidth = document.getElementById('customWidth');
         this.customHeight = document.getElementById('customHeight');
         this.customDpr = document.getElementById('customDpr');
@@ -63,10 +63,7 @@ class DeviceEmulatorPopup {
             this.toggleDarkMode(e.target.checked);
         });
 
-        // Device skin toggle
-        this.deviceSkinToggle.addEventListener('change', (e) => {
-            this.toggleDeviceSkin(e.target.checked);
-        });
+        
     }
 
     loadDevices() {
@@ -223,7 +220,7 @@ class DeviceEmulatorPopup {
             userAgent: this.currentDevice ? this.currentDevice.userAgent : navigator.userAgent,
             orientation: this.currentOrientation,
             darkMode: this.darkModeToggle.checked,
-            deviceSkin: this.deviceSkinToggle.checked,
+            deviceSkin: false,
             deviceName: this.currentDevice ? Object.keys(DEVICE_DATABASE).find(name => 
                 DEVICE_DATABASE[name] === this.currentDevice) : null
         };
@@ -269,10 +266,7 @@ class DeviceEmulatorPopup {
         document.body.classList.toggle('dark-mode', enabled);
     }
 
-    toggleDeviceSkin(enabled) {
-        // This will be handled by the content script
-        console.log('Device skin toggled:', enabled);
-    }
+    
 
     updateUI() {
         this.activateBtn.textContent = this.isActive ? 'Deactivate' : 'Activate';
@@ -309,7 +303,7 @@ class DeviceEmulatorPopup {
             customDpr: this.customDpr.value,
             touchEnabled: this.touchToggle.checked,
             darkMode: this.darkModeToggle.checked,
-            deviceSkin: this.deviceSkinToggle.checked
+            deviceSkin: false
         };
 
         chrome.storage.local.set({ deviceEmulatorState: state });

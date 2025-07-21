@@ -14,11 +14,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         case 'resetEmulation':
             resetEmulation(request.tabId).then(sendResponse);
             return true; // Indicates an async response
-        case 'dispatchMouseEvent':
-            if (sender.tab && activeEmulationSettings[sender.tab.id] && activeEmulationSettings[sender.tab.id].touch) {
-                dispatchTouchEvent(sender.tab.id, request);
-            }
-            break;
+        
     }
 });
 
@@ -48,14 +44,12 @@ async function activateEmulation(tabId, settings) {
         activeEmulationSettings[tabId] = settings;
         touchActive[tabId] = false;
 
-        if (!settings.deviceSkin) {
-            await sendDebuggerCommand(tabId, 'Emulation.setDeviceMetricsOverride', {
-                width: settings.width,
-                height: settings.height,
-                deviceScaleFactor: settings.dpr,
-                mobile: true,
-            });
-        }
+        await sendDebuggerCommand(tabId, 'Emulation.setDeviceMetricsOverride', {
+            width: settings.width,
+            height: settings.height,
+            deviceScaleFactor: settings.dpr,
+            mobile: true,
+        });
 
         await sendDebuggerCommand(tabId, 'Emulation.setUserAgentOverride', {
             userAgent: settings.userAgent
@@ -74,25 +68,9 @@ async function activateEmulation(tabId, settings) {
             }]
         });
 
-        if (settings.deviceSkin) {
-            try {
-                await chrome.scripting.executeScript({
-                    target: { tabId },
-                    files: ['content.js']
-                });
-                console.log('content.js injected successfully.');
-            } catch (e) {
-                console.error('Failed to inject content.js:', e);
-            }
-            await chrome.tabs.sendMessage(tabId, { action: 'applyDeviceSkin', settings });
-        }
+        
 
-        // Send emulation state to content script
-        await chrome.tabs.sendMessage(tabId, {
-            action: 'updateEmulationState',
-            active: true,
-            touchEnabled: settings.touch
-        });
+        
 
         return { success: true };
     } catch (error) {
@@ -122,23 +100,9 @@ async function resetEmulation(tabId) {
         delete activeEmulationSettings[tabId];
         delete touchActive[tabId]; // Clear touch state on reset
 
-        // We need to inject the content script to remove the skin
-        await chrome.scripting.executeScript({
-            target: { tabId },
-            files: ['device-skins.js']
-        });
-        await chrome.scripting.executeScript({
-            target: { tabId },
-            files: ['content.js']
-        });
-        await chrome.tabs.sendMessage(tabId, { action: 'resetDeviceSkin' });
+        
 
-        // Send emulation state to content script
-        await chrome.tabs.sendMessage(tabId, {
-            action: 'updateEmulationState',
-            active: false,
-            touchEnabled: false
-        });
+        
 
         return { success: true };
     } catch (error) {
@@ -158,45 +122,3 @@ async function sendDebuggerCommand(tabId, method, params = {}) {
     });
 }
 
-async function dispatchTouchEvent(tabId, mouseEvent) {
-    const touchPoints = [{
-        x: mouseEvent.clientX,
-        y: mouseEvent.clientY,
-        radiusX: 1,
-        radiusY: 1,
-        force: 1,
-        id: 1
-    }];
-
-    if (mouseEvent.eventType === 'mousedown') {
-        // Only dispatch touchStart if it's a left click
-        if (mouseEvent.button === 0) {
-            touchActive[tabId] = true;
-            await sendDebuggerCommand(tabId, 'Input.dispatchTouchEvent', {
-                type: 'touchStart',
-                touchPoints: touchPoints,
-                modifiers: 0,
-                timeStamp: Date.now()
-            });
-        }
-    } else if (mouseEvent.eventType === 'mousemove') {
-        if (touchActive[tabId]) {
-            await sendDebuggerCommand(tabId, 'Input.dispatchTouchEvent', {
-                type: 'touchMove',
-                touchPoints: touchPoints,
-                modifiers: 0,
-                timeStamp: Date.now()
-            });
-        }
-    } else if (mouseEvent.eventType === 'mouseup') {
-        if (touchActive[tabId]) {
-            touchActive[tabId] = false;
-            await sendDebuggerCommand(tabId, 'Input.dispatchTouchEvent', {
-                type: 'touchEnd',
-                touchPoints: touchPoints,
-                modifiers: 0,
-                timeStamp: Date.now()
-            });
-        }
-    }
-}

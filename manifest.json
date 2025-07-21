@@ -20,7 +20,7 @@
   
   "web_accessible_resources": [
     {
-      "resources": ["skins.css", "url-config.js"],
+      "resources": ["url-config.js"],
       "matches": ["http://*/*", "https://*/*"]
     }
   ],

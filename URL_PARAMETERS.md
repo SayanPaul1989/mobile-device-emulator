@@ -10,7 +10,7 @@ The Mobile Device Emulator Pro now supports URL parameters for automatic device 
 - `emulator_orientation` - `portrait` or `landscape`
 - `emulator_touch` - `true` or `false`
 - `emulator_dark` - `true` or `false` (dark mode)
-- `emulator_skin` - `true` or `false` (device skin)
+
 
 ### Custom Dimensions
 - `emulator_width` - Viewport width in pixels
@@ -35,12 +35,11 @@ The Mobile Device Emulator Pro now supports URL parameters for automatic device 
 
 ### Java/Selenium
 ```java
-// iPhone 15 Pro Max with device skin
-String url = "https://example.com?emulator_device=iPhone15ProMax&emulator_skin=true";
+String url = "https://example.com?emulator_device=iPhone15ProMax";
 driver.get(url);
 
 // Samsung Galaxy in landscape with dark mode
-String url = "https://example.com?emulator_device=GalaxyS24Ultra&emulator_orientation=landscape&emulator_dark=true&emulator_skin=true";
+String url = "https://example.com?emulator_device=GalaxyS24Ultra&emulator_orientation=landscape&emulator_dark=true";
 driver.get(url);
 
 // Custom dimensions
@@ -51,7 +50,7 @@ driver.get(url);
 ### Python/Selenium
 ```python
 # iPhone testing
-driver.get("https://example.com?emulator_device=iPhone15ProMax&emulator_skin=true")
+driver.get("https://example.com?emulator_device=iPhone15ProMax")
 
 # Pixel testing
 driver.get("https://example.com?emulator_device=Pixel8Pro&emulator_orientation=portrait&emulator_dark=true")
@@ -60,7 +59,7 @@ driver.get("https://example.com?emulator_device=Pixel8Pro&emulator_orientation=p
 ### JavaScript/Puppeteer
 ```javascript
 // Navigate with emulation
-await page.goto('https://example.com?emulator_device=iPhone15ProMax&emulator_skin=true');
+await page.goto('https://example.com?emulator_device=iPhone15ProMax');
 ```
 
 ### Direct Browser Testing
@@ -77,24 +76,24 @@ https://example.com?emulator_device=iPhone15ProMax&emulator_orientation=portrait
 
 ## Complete Example URLs
 
-### iPhone 15 Pro Max (Portrait, with skin)
+### iPhone 15 Pro Max (Portrait)
 ```
-https://example.com?emulator_device=iPhone15ProMax&emulator_orientation=portrait&emulator_touch=true&emulator_dark=false&emulator_skin=true
+https://example.com?emulator_device=iPhone15ProMax&emulator_orientation=portrait&emulator_touch=true&emulator_dark=false
 ```
 
 ### Samsung Galaxy S24 Ultra (Landscape, dark mode)
 ```
-https://example.com?emulator_device=GalaxyS24Ultra&emulator_orientation=landscape&emulator_touch=true&emulator_dark=true&emulator_skin=true
+https://example.com?emulator_device=GalaxyS24Ultra&emulator_orientation=landscape&emulator_touch=true&emulator_dark=true
 ```
 
 ### Custom Tablet Size
 ```
-https://example.com?emulator_width=1024&emulator_height=768&emulator_dpr=2.0&emulator_touch=true&emulator_dark=false&emulator_skin=false
+https://example.com?emulator_width=1024&emulator_height=768&emulator_dpr=2.0&emulator_touch=true&emulator_dark=false
 ```
 
-### iPad Pro (Portrait, with skin)
+### iPad Pro (Portrait)
 ```
-https://example.com?emulator_device=iPadPro12&emulator_orientation=portrait&emulator_touch=true&emulator_skin=true
+https://example.com?emulator_device=iPadPro12&emulator_orientation=portrait&emulator_touch=true
 ```
 
 ## Java Helper Class
@@ -105,7 +104,6 @@ Use the provided `MobileEmulatorConfig` class for clean URL building:
 String url = new MobileEmulatorConfig("https://example.com")
     .device("iPhone15ProMax")
     .orientation("portrait")
-    .deviceSkin(true)
     .build();
 
 driver.get(url);

@@ -36,7 +36,7 @@ A Chrome extension that provides advanced mobile device emulation with modern de
 - `popup.html` - Extension popup interface
 - `popup.js` - Popup functionality and UI controls
 - `devices.js` - Device database and specifications
-- `content.js` - Content script for page manipulation
+
 - `background.js` - Background service worker
 - `icons/` - Extension icons
 
