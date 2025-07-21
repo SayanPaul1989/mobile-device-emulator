@@ -697,8 +697,12 @@ class DeviceSkinApplier {
 
     handleMouseEvent(event) {
         if (!this.emulationActiveAndTouchEnabled) {
-            return; // Only send events if emulation is active and touch is enabled
+            return;
         }
+
+        event.preventDefault();
+        event.stopPropagation();
+
         try {
             chrome.runtime.sendMessage({
                 action: 'dispatchMouseEvent',
@@ -715,7 +719,7 @@ class DeviceSkinApplier {
         } catch (error) {
             if (error.message.includes('Extension context invalidated')) {
                 console.warn('Extension context invalidated. Stopping mouse event dispatch.');
-                this.emulationActiveAndTouchEnabled = false; // Disable further dispatch
+                this.emulationActiveAndTouchEnabled = false;
             } else {
                 console.error('Error dispatching mouse event:', error);
             }

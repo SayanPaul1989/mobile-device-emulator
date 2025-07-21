@@ -27,8 +27,14 @@ chrome.debugger.onDetach.addListener((source, reason) => {
     if (source.tabId) {
         debuggerAttached[source.tabId] = false;
         delete activeEmulationSettings[source.tabId];
-        delete touchActive[source.tabId]; // Clear touch state on detach
+        delete touchActive[source.tabId];
         console.log(`Debugger detached from tab ${source.tabId}:`, reason);
+    }
+});
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status === 'complete' && activeEmulationSettings[tabId]) {
+        activateEmulation(tabId, activeEmulationSettings[tabId]);
     }
 });
 
@@ -39,15 +45,17 @@ async function activateEmulation(tabId, settings) {
             debuggerAttached[tabId] = true;
         }
 
-        activeEmulationSettings[tabId] = settings; // Store settings
-        touchActive[tabId] = false; // Initialize touch state
+        activeEmulationSettings[tabId] = settings;
+        touchActive[tabId] = false;
 
-        await sendDebuggerCommand(tabId, 'Emulation.setDeviceMetricsOverride', {
-            width: settings.width,
-            height: settings.height,
-            deviceScaleFactor: settings.dpr,
-            mobile: true,
-        });
+        if (!settings.deviceSkin) {
+            await sendDebuggerCommand(tabId, 'Emulation.setDeviceMetricsOverride', {
+                width: settings.width,
+                height: settings.height,
+                deviceScaleFactor: settings.dpr,
+                mobile: true,
+            });
+        }
 
         await sendDebuggerCommand(tabId, 'Emulation.setUserAgentOverride', {
             userAgent: settings.userAgent
